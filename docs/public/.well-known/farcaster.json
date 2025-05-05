@@ -1,0 +1,17 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjYwMjMsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHg0NTYxMzExNjFmODNDN0Q3ZkRBMTViMzJhNWY3QzIxRkQ0RTI3RTk2In0",
+    "payload": "eyJkb21haW4iOiJiaHZyLmRldiJ9",
+    "signature": "MHhkOTU3NjAzM2Y0NWJiMDRkZmNkYTg4NWU1MDVjODk3NmRlNTI3ZjlhODVkOTRlMWYxODU0NDM2ZDkxY2VkZmQyNzViMzhkMTBhYzdlZGYyZWNhOTgxYTE1ZDBkMzhkZjViYjJjYTQ4YzhhOTkyNmQxMTMwNmE2YWFlMTI0NjU5NTFj"
+  },
+  "frame": {
+    "version": "1",
+    "name": "bhvr",
+    "iconUrl": "https://bhvr.dev/icon.png",
+    "homeUrl": "https://bhvr.dev",
+    "imageUrl": "https://bhvr.dev/image.png",
+    "buttonTitle": "bun create bhvr",
+    "splashImageUrl": "https://bhvr.dev/splash.png",
+    "splashBackgroundColor": "#ffffff"
+  }
+}
