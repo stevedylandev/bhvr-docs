@@ -9,7 +9,6 @@
     "preview": "vocs preview"
   },
   "dependencies": {
-    "@farcaster/frame-sdk": "^0.0.37",
     "react": "latest",
     "react-dom": "latest",
     "vocs": "latest"

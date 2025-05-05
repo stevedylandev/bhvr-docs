@@ -2,8 +2,13 @@ import { defineConfig } from 'vocs'
 
 export default defineConfig({
   title: 'bhvr',
+  baseUrl: 'https://bhvr.dev',
   description: 'A stack made for the open web',
   iconUrl: "/icon.svg",
+  logoUrl: {
+    dark: "/logo-dark.svg",
+    light: "/logo-light.svg"
+  },
   head({ path }) {
     const fcData = JSON.stringify({
       version: "next",
@@ -15,7 +20,7 @@ export default defineConfig({
           name: "bhvr",
           url: `https://bhvr.dev/${path}`,
           splashImageUrl: "https://bhvr.dev/splash.png",
-          splashBackgroundColor: "#ffffff"
+          splashBackgroundColor: "#121113"
         }
       }
     })
@@ -23,7 +28,31 @@ export default defineConfig({
         <meta name='fc:frame' content={fcData} />
       )
     },
-  logoUrl: "https://bhvr-docs.orbiter.website/icon-big.png",
+  socials: [
+    {
+      icon: 'github',
+      link: 'https://github.com/stevedylandev/bhvr',
+    },
+  ],
+  markdown: {
+    code: {
+      themes: {
+        light: 'vitesse-light',
+        dark: 'vitesse-dark'
+      }
+    }
+  },
+  theme: {
+    colorScheme: 'dark',
+    accentColor: '#BD976A'
+  },
+  editLink: {
+    pattern: 'https://github.com/stevedylandev/bhvr-docs/edit/main/docs/pages/:path',
+    text: 'Edit on GitHub'
+  },
+  topNav: [
+    { text: '0.3.0', items: [{ text: 'Contribute', link: 'https://github.com/stevedylandev/bhvr'} ] },
+  ],
   sidebar: [
     {
       text: 'Getting Started',

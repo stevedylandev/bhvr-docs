@@ -18,7 +18,6 @@ export function Landing() {
     <main className="flex max-w-lg sm:max-w-2xl mx-auto flex-col items-center justify-start p-4 ">
       <div className="w-full max-w-2xl flex flex-col items-center gap-8">
         <div className="flex flex-col items-center gap-3">
-          <h1 className="text-4xl md:text-5xl font-bold">bhvr</h1>
           <p className="text-xl text-muted-foreground">Bun + Hono + Vite + React</p>
           <p className="text-center max-w-md">Modern and lightweight stack for the open web</p>
         </div>
