@@ -23,7 +23,7 @@ export function Landing() {
         </div>
 
         <div className="w-full">
-          <div className="relative w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 p-4 overflow-hidden">
+          <div className="relative w-full rounded-lg bg-zinc-800 p-4 overflow-hidden">
             <pre className="text-sm font-mono">
               <code>bun create bhvr@latest</code>
             </pre>
