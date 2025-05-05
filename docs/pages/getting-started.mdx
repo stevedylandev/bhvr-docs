@@ -1,1 +1,130 @@
 # Get started
+
+bhvr is a framework used to build apps that are not tied down to a single provider, and each piece can be deployed in multiple places.
+
+::::steps
+
+### Create a New Project
+
+To start using bhvr make sure you have [Bun](https://bun.sh) installed first, then run the following command.
+
+```bash [terminal]
+bun create bhvr@latest
+```
+
+The stack is composed of the following:
+
+```
+.
+├── client/               # React frontend
+├── server/               # Hono backend
+├── shared/               # Shared TypeScript definitions
+│   └── src/types/        # Type definitions used by both client and server
+└── package.json          # Root package.json with workspaces
+```
+
+### Start Up Dev Server
+
+Once you have created your project you can `cd` into it and run the dev server
+
+```bash [terminal]
+bun run dev
+```
+
+This will spin up dev servers for the `server`, `client`, and `shared` packages
+
+Try updating the API endpoints in the `server` package
+
+```typescript [server/src/index.ts]
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import type { ApiResponse } from 'shared/dist'
+
+const app = new Hono()
+
+app.use(cors())
+
+app.get('/', (c) => {
+  return c.text('Hello Hono!')
+})
+
+app.get('/hello', async (c) => {
+
+  const data: ApiResponse = {
+    message: "Hello BHVR!",
+    success: true
+  }
+
+  return c.json(data, { status: 200 })
+})
+
+export default app
+```
+
+Also try editing the React app in `client`
+
+```tsx [client/src/App.tsx]
+import { useState } from 'react'
+import beaver from './assets/beaver.svg'
+import { ApiResponse } from 'shared'
+import './App.css'
+
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3000"
+
+function App() {
+  const [data, setData] = useState<ApiResponse | undefined>()
+
+  async function sendRequest() {
+    try {
+      const req = await fetch(`${SERVER_URL}/hello`)
+      const res: ApiResponse = await req.json()
+      setData(res)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  return (
+    <>
+      <div>
+        <a href="https://github.com/stevedylandev/bhvr" target="_blank">
+          <img src={beaver} className="logo" alt="beaver logo" />
+        </a>
+      </div>
+      <h1>bhvr</h1>
+      <h2>Bun + Hono + Vite + React</h2>
+      <p>A typesafe fullstack monorepo</p>
+      <div className="card">
+        <button onClick={sendRequest}>
+          Call API
+        </button>
+        {data && (
+          <pre className='response'>
+            <code>
+            Message: {data.message} <br />
+            Success: {data.success.toString()}
+            </code>
+          </pre>
+        )}
+      </div>
+      <p className="read-the-docs">
+        Click the beaver to learn more
+      </p>
+    </>
+  )
+}
+
+export default App
+```
+
+### Build Project
+
+Once you have your project ready to go you can use the build command to build the `client` and `shared` packages
+
+```bash [terminal]
+bun run build
+```
+
+From there you can select multiple [deployment options](/deployment/client/orbiter)
+
+::::

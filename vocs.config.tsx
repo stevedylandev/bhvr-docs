@@ -1,12 +1,9 @@
-import * as React from 'react'
 import { defineConfig } from 'vocs'
 
 export default defineConfig({
   title: 'bhvr',
   description: 'A stack made for the open web',
-  logoUrl: "/icon-big.png",
   iconUrl: "/icon.svg",
-  ogImageUrl: 'https://vocs.dev/api/og?logo=%logo&title=%title&description=%description',
   head({ path }) {
     const fcData = JSON.stringify({
       version: "next",
@@ -26,6 +23,7 @@ export default defineConfig({
         <meta name='fc:frame' content={fcData} />
       )
     },
+  logoUrl: "https://bhvr-docs.orbiter.website/icon-big.png",
   sidebar: [
     {
       text: 'Getting Started',
@@ -59,7 +57,7 @@ export default defineConfig({
       items: [
         {
           text: 'Client',
-          collapsed: false,
+          collapsed: true,
           items: [
             {
               text: 'Orbiter',
@@ -77,7 +75,7 @@ export default defineConfig({
         },
         {
           text: 'Server',
-          collapsed: false,
+          collapsed: true,
           items: [
             {
               text: 'Cloudflare Workers',
