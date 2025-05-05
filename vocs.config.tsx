@@ -4,7 +4,7 @@ export default defineConfig({
   title: 'bhvr',
   baseUrl: 'https://bhvr.dev',
   description: 'A stack made for the open web',
-  iconUrl: "/icon.svg",
+  iconUrl: "/icon.png",
   logoUrl: {
     dark: "/logo-dark.svg",
     light: "/logo-light.svg"
@@ -18,7 +18,7 @@ export default defineConfig({
         action: {
           type: "launch_frame",
           name: "bhvr",
-          url: `https://bhvr.dev/${path}`,
+          url: `https://bhvr.dev${path}`,
           splashImageUrl: "https://bhvr.dev/splash.png",
           splashBackgroundColor: "#121113"
         }
