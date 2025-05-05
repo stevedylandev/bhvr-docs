@@ -9,6 +9,7 @@ export default defineConfig({
     dark: "/logo-dark.svg",
     light: "/logo-light.svg"
   },
+  ogImageUrl: "/og.png",
   head({ path }) {
     const fcData = JSON.stringify({
       version: "next",
