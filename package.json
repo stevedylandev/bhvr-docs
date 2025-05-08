@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vocs dev",
     "build": "vocs build -o ../dist",
-    "preview": "vocs preview"
+    "preview": "vocs preview",
+    "format": "bunx biome format --write ./docs"
   },
   "dependencies": {
     "react": "latest",

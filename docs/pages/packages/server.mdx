@@ -1,4 +1,4 @@
-import { Button } from 'vocs/components'
+import { Button } from "vocs/components";
 
 # `server`
 
@@ -13,33 +13,33 @@ Check out the [official Hono documentation](https://hono.dev) for a full referen
 You can declare routes in your API like so
 
 ```typescript
-import { Hono } from 'hono'
+import { Hono } from "hono";
 
-const app = new Hono()
+const app = new Hono();
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+app.get("/", (c) => {
+  return c.text("Hello Hono!");
+});
 
-export default app
+export default app;
 ```
 
 Hono also makes it easy to add in path parameters
 
 ```typescript
-app.get('/user/:name', async (c) => {
-  const name = c.req.param('name')
+app.get("/user/:name", async (c) => {
+  const name = c.req.param("name");
   // ...
-})
+});
 ```
 
 or multiple parameters
 
 ```typescript
-app.get('/posts/:id/comment/:comment_id', async (c) => {
-  const { id, comment_id } = c.req.param()
+app.get("/posts/:id/comment/:comment_id", async (c) => {
+  const { id, comment_id } = c.req.param();
   // ...
-})
+});
 ```
 
 The `(c)` in Hono is the `Context` which has loads of primary features of your API.
@@ -47,24 +47,24 @@ The `(c)` in Hono is the `Context` which has loads of primary features of your A
 **Access a Request**
 
 ```typescript
-app.get('/hello', (c) => {
-  const userAgent = c.req.header('User-Agent')
+app.get("/hello", (c) => {
+  const userAgent = c.req.header("User-Agent");
   // ...
-})
+});
 ```
 
 **Return JSON or HTML**
 
 ```typescript
-app.get('/api', (c) => {
-  return c.json({ message: 'Hello!' })
-})
+app.get("/api", (c) => {
+  return c.json({ message: "Hello!" });
+});
 ```
 
 ```typescript
-app.get('/', (c) => {
-  return c.html('<h1>Hello! Hono!</h1>')
-})
+app.get("/", (c) => {
+  return c.html("<h1>Hello! Hono!</h1>");
+});
 ```
 
 **Access an ENV**
@@ -72,16 +72,16 @@ app.get('/', (c) => {
 ```typescript
 // Type definition to make type inference
 type Bindings = {
-  MY_KV: KVNamespace
-}
+  MY_KV: KVNamespace;
+};
 
-const app = new Hono<{ Bindings: Bindings }>()
+const app = new Hono<{ Bindings: Bindings }>();
 
 // Environment object for Cloudflare Workers
-app.get('/', async (c) => {
-  c.env.MY_KV.get('my-key')
+app.get("/", async (c) => {
+  c.env.MY_KV.get("my-key");
   // ...
-})
+});
 ```
 
 ## RPC
@@ -95,30 +95,31 @@ bun create bhvr@latest --rpc
 This will setup your API with the following code, and the key being the use of `const routes` and exporting the `AppType`
 
 ```typescript src/index.ts
-import { Hono } from 'hono'
-import { cors } from 'hono/cors'
-import type { ApiResponse } from 'shared/dist'
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import type { ApiResponse } from "shared/dist";
 
-const app = new Hono()
+const app = new Hono();
 
-app.use(cors())
+app.use(cors());
 
-const routes = app.get('/', (c) => { //[!code focus]
-  return c.text('Hello Hono!')
-})
+const routes = app
+  .get("/", (c) => {
+    //[!code focus]
+    return c.text("Hello Hono!");
+  })
 
-.get('/hello', async (c) => {
+  .get("/hello", async (c) => {
+    const data: ApiResponse = {
+      message: "Hello BHVR!",
+      success: true,
+    };
 
-  const data: ApiResponse = {
-    message: "Hello BHVR!",
-    success: true
-  }
+    return c.json(data, { status: 200 });
+  });
 
-  return c.json(data, { status: 200 })
-})
-
-export type AppType = typeof routes // [!code focus]
-export default app
+export type AppType = typeof routes; // [!code focus]
+export default app;
 ```
 
 In your `client` code Hono is installed as a dependency, and the `hc` client is imported and initialized. The `AppType` is also used so we can build types with it.
@@ -181,9 +182,7 @@ const app = new Hono<{ Bindings: Bindings }>();
 app.get("/query/users/:id", async (c) => {
   const userId = c.req.param("id");
   try {
-    let { results } = await c.env.DB.prepare(
-      "SELECT * FROM users WHERE user_id = ?",
-    )
+    let { results } = await c.env.DB.prepare("SELECT * FROM users WHERE user_id = ?")
       .bind(userId)
       .all();
     return c.json(results);
@@ -207,19 +206,19 @@ Cloudlfare has both public and private variables, and can only be accessed throu
 
 ```typescript
 type Bindings = {
-  MY_BUCKET: R2Bucket
-  USERNAME: string
-  PASSWORD: string
-}
+  MY_BUCKET: R2Bucket;
+  USERNAME: string;
+  PASSWORD: string;
+};
 
-const app = new Hono<{ Bindings: Bindings }>()
+const app = new Hono<{ Bindings: Bindings }>();
 
 // Access to environment values
-app.put('/upload/:key', async (c, next) => {
-  const key = c.req.param('key')
-  await c.env.MY_BUCKET.put(key, c.req.body)
-  return c.text(`Put ${key} successfully!`)
-})
+app.put("/upload/:key", async (c, next) => {
+  const key = c.req.param("key");
+  await c.env.MY_BUCKET.put(key, c.req.body);
+  return c.text(`Put ${key} successfully!`);
+});
 ```
 
 To set these variables, public ones can be put inside the `wrangler.jsonc` or `wrangler.toml` file.
@@ -234,13 +233,13 @@ To set these variables, public ones can be put inside the `wrangler.jsonc` or `w
   //   "nodejs_compat"
   // ],
   "vars": {
-    "MY_VAR": "my-variable"
+    "MY_VAR": "my-variable",
   },
   "kv_namespaces": [
     {
       "binding": "MY_KV_NAMESPACE",
-      "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    }
+      "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    },
   ],
   // "r2_buckets": [
   //   {
