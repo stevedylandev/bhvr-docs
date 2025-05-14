@@ -1,3 +1,105 @@
 # Orbiter
 
-Coming soon
+import { Button } from 'vocs/components'
+
+<img src="https://docs.orbiter.host/light_logo.svg" alt="orbiter" className="mx-auto" />
+
+Much like the [inspiration](/why-bhvr) behind bhvr, [Orbiter](https://orbiter.host) is a site hosting platform built on the principles that the web should be open and without walled gardens. It features many of the things every dev wants:
+
+- Simple CLI for local builds and deployments
+- Custom Domains
+- Analytics
+- Version Control for easy rollbacks
+- GitHub actions for automated deployments
+
+In this guide we'll show you how to deploy your [`client`](/packages/client) to Orbiter in no time at all.
+
+## Client Deployment
+
+::::note
+Orbiter is currently only for client side rendered sites (aka static sites)
+::::
+
+::::steps
+
+### Setup Orbiter Account
+
+Visit [app.orbiter.host](https://app.orbiter.host) to create a free account and make an API key on the [App Dashboard](https://app.orbiter.host) or on the [Keys Page](https://app.orbiter.host/api-keys)
+
+### Install the Orbiter CLI and Authorize
+
+```bash [terminal]
+bun add -g orbiter-cli
+```
+
+```bash [terminal]
+orbiter auth
+```
+
+### Deploy `client`
+
+Move into the `client` package and run the `deploy` command
+
+```bash [terminal]
+cd client
+
+orbiter deploy
+```
+
+::::
+
+## GitHub Actions
+
+Orbiter also offers GitHub Actions which can be used to deployment automatically.
+
+If you haven't already, [create a free account](https://app.orbiter.host) and create your first site. Then you will need the following information:
+
+- Project Name: This would be the name you chose when you made the site. For example, the site `mysite.orbiter.website` the name would be `mysite`
+- Build Directory: The name your build directory, e.g. `dist`, `out`, `public`, etc
+- Orbiter API Key: This can be created on the [API Keys Page](https://app.orbiter.host/api-keys) of the Orbiter App
+- Node Version (Optional): Define the version of Node you want to use, will default to v20
+- Build Command (Optional): Define the command used to build, default is `npm run build`
+
+Once you have all of this info prepared make a new directory called `.github` in the root of your folder, then add a directory called `worflows` to it. Finally make a new file called `deploy.yaml`.
+
+Alternatively run this in terminal:
+
+```bash
+mkdir -p .github/workflows && touch .github/workflows/deploy.yaml
+```
+
+Paste in the following code into the `deploy.yaml` file with your config listed earlier
+
+```yaml
+name: Deploy
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy to Orbiter
+        uses: orbiterhost/orbiter-github-actions@v0.1.4 # Update with latest version
+        with:
+          project-name: "mysite" # Name of your project
+          build-dir: "./dist" # Name of the build output directory
+          api-key: ${{ secrets.ORBITER_API_KEY }} # Will use repository secret
+          # Optional inputs with their defaults
+          node-version: "20.x" # Optional, defaults to '20.x'
+          build-command: "npm run build" # Optional, defaults to 'npm run build'
+```
+
+Lastly you will need to add your Orbiter API Key as a Repository Secret. Navigate GitHub project Settings > Secrets and Variables > Actions. Click `New repository secret`, then use `ORBITER_API_KEY` as the name, and then paste the secret into the box below.
+
+Then you're all set! On your next deployment you can check the `Actions` tab of the GitHub project to make sure it deployed successfully.
+
+## Further Reference
+
+For more information about how to use Orbiter visit the official docs with the link below
+
+<Button href="https://docs.orbiter.host">Orbiter Docs</Button>
