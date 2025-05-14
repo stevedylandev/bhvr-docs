@@ -1,0 +1,120 @@
+# Single Origin Deployment
+
+import { Button } from "vocs/components";
+
+Serve both your frontend and API from the same process, same port, and same origin—ideal for fullstack apps where simplicity matters.
+
+This guide walks through deploying a bhvr project using a **single origin** approach. You’ll still get React + Vite on the frontend, Hono on the backend, and Bun running it all.
+
+Perfect for:
+
+- VPS deployments
+- Raspberry Pis
+- Home servers
+- Projects where you want one URL to rule them all
+
+## What Is a Single Origin Deployment?
+
+A single origin setup serves your client and your API from the same runtime and port:
+
+- `bun` runs both your backend and static frontend
+- `hono` handles both routes and static files
+- Everything lives behind one port and one domain (like `https://yourapp.com`)
+
+No CORS. No extra hops. No need for a separate web server unless you prefer one.
+
+## Folder Structure
+
+Single origin works great with bhvr’s monorepo setup:
+
+```
+client/   → React + Vite frontend
+server/   → Hono API backend
+shared/   → Shared types and utilities
+```
+
+After building, you copy the output from `client` into the `server` so it can be served statically.
+
+## Why Use Single Origin?
+
+- **No CORS headaches**
+- **One tunnel or reverse proxy** to manage
+- **Cleaner mental model** for small or embedded deployments
+- Great fit for **low-resource devices** like Raspberry Pi
+
+## Build and Launch
+
+That’s it. Your entire app is now served on port 3000 by a single Bun process.
+
+## Server Deployment Example
+
+Whether you're deploying to a VPS, a Raspberry Pi, or a bare metal machine at home—if you can SSH into it and it runs a Unix-like OS, you're good to go. (This guide assumes a Linux/Unix server environment; Windows is not supported.) Here's a quick setup:
+
+### Install Bun
+
+```bash
+curl -fsSL https://bun.sh/install | bash
+```
+
+### Clone Your Project
+
+```bash
+sudo mkdir -p /opt/app && sudo chown $USER:$USER /opt/app
+cd /opt/app
+
+git clone https://github.com/your/project.git app
+cd app
+```
+
+### Build and Copy
+
+```bash
+bun install
+bun run build
+cp -r client/dist server/dist/client
+```
+
+### systemd Service
+
+```ini
+# /etc/systemd/system/app.service
+[Unit]
+Description=bhvr App – Single Origin
+After=network-online.target
+
+[Service]
+User=youruser
+WorkingDirectory=/opt/app
+Environment=YOUR_ENV_VARS
+ExecStart=/home/youruser/.bun/bin/bun run server/dist/server/src/index.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable --now app
+```
+
+### Expose It
+
+You can expose the server using:
+
+- [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)
+- [Caddy](https://caddyserver.com)
+- [Tailscale Funnel](https://tailscale.com/funnel/)
+
+Each of these lets you skip dealing with NAT, SSL, and port forwarding.
+
+## Summary
+
+Single origin deployments are a great fit when you want everything bundled into one runtime and served from a single point of entry.
+
+They’re fast, minimal, and don’t require any orchestration.
+
+## More Resources
+
+<Button href='/getting-started'>Getting Started with bhvr</Button>
