@@ -79,6 +79,10 @@ app.get("/api/hello", async (c) => {
 // Serve static files for everything else
 app.use("*", serveStatic({ root: "./static" }));
 
+app.get("*", async (c, next) => {
+  return serveStatic({ root: "./static", path: "index.html" })(c, next);
+});
+
 const port = parseInt(process.env.PORT || "3000");
 
 export default {
@@ -233,16 +237,16 @@ FROM oven/bun:latest
 WORKDIR /app
 
 # Copy package files
-COPY package.json bun.lockb ./
+COPY package.json bun.lock ./
 COPY client/package.json ./client/
 COPY server/package.json ./server/
 COPY shared/package.json ./shared/
 
-# Install dependencies
-RUN bun install
-
 # Copy source code
 COPY . .
+
+# Install dependencies
+RUN bun install
 
 # Build for single origin
 RUN bun run build:single
