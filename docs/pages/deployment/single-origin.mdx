@@ -50,7 +50,7 @@ Modify `server/src/index.ts` to serve static files alongside your API:
 ```typescript
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import { serveStatic } from "hono/bun";
+import { serveStatic } from "hono/bun"; // [!code ++]
 import type { ApiResponse } from "shared/dist";
 
 const app = new Hono();
@@ -77,11 +77,11 @@ app.get("/api/hello", async (c) => {
 // app.post('/api/data', ...)
 
 // Serve static files for everything else
-app.use("*", serveStatic({ root: "./static" }));
+app.use("*", serveStatic({ root: "./static" })); // [!code ++]
 
-app.get("*", async (c, next) => {
-  return serveStatic({ root: "./static", path: "index.html" })(c, next);
-});
+app.get("*", async (c, next) => { // [!code ++]
+  return serveStatic({ root: "./static", path: "index.html" })(c, next); // [!code ++]
+}); // [!code ++]
 
 const port = parseInt(process.env.PORT || "3000");
 
@@ -109,7 +109,7 @@ function App() {
   async function sendRequest() {
     try {
       // Use relative path - works in both dev and production
-      const req = await fetch("/api/hello");
+      const req = await fetch("/api/hello"); // [!code hl]
       const res: ApiResponse = await req.json();
       setData(res);
     } catch (error) {
@@ -164,14 +164,14 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "../shared/src"),
     },
   },
-  server: {
-    proxy: {
-      "/api": {
-        target: "http://localhost:3000",
-        changeOrigin: true,
-      },
-    },
-  },
+  server: { // [!code ++]
+    proxy: { // [!code ++]
+      "/api": { // [!code ++]
+        target: "http://localhost:3000", // [!code ++]
+        changeOrigin: true, // [!code ++]
+      }, // [!code ++]
+    }, // [!code ++]
+  }, // [!code ++]
 });
 ```
 
@@ -190,9 +190,9 @@ Add these scripts to your root `package.json` (alongside the existing bhvr scrip
     "build:shared": "cd shared && bun run build",
     "build:server": "cd server && bun run build",
     "build": "bun run build:shared && bun run build:client",
-    "build:single": "bun run build && bun run copy:static && bun run build:server",
-    "copy:static": "rm -rf server/static && cp -r client/dist server/static",
-    "start:single": "cd server && bun run dist/index.js",
+    "build:single": "bun run build && bun run copy:static && bun run build:server", // [!code ++]
+    "copy:static": "rm -rf server/static && cp -r client/dist server/static", // [!code ++]
+    "start:single": "cd server && bun run dist/index.js", // [!code ++]
     "postinstall": "bun run build:shared && bun run build:server"
   }
 }
