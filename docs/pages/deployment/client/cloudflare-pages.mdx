@@ -1,3 +1,87 @@
 # Cloudflare Pages
 
-Coming soon
+A great way to host your bhvr client, especially since your server can be hosted with Cloudflare Workers. There are two primary ways you can host your client through Pages:
+- Git Integration
+- Manual Upload
+
+::::note
+Once you have chosen one of these methods you will not be able to switch between the two! Doing so will require deleting the site and starting over.
+::::
+
+## Git Integration
+
+::::steps
+
+### Create a New Pages Project
+
+Login to your Cloudflare account and then from the sidebar select `Compute (Workers)` and click the `Create` button in the top right. Select the pages tab and then select the Git repository option.
+
+### Setup Your Project
+
+Connect your choice of Git account and then select the repo for your bhvr project. Once select make sure you have the following items setup accordingly under the build settings:
+
+- Framework Preset: `React (Vite)`
+- Build command: `bun install && bun run build`
+- Build output directory: `dist`
+- Root directory (advanced): `client`
+- Environment Variables: `BUN_VERSION=1.2.14` (use the latest version)
+
+![dashboard screenshot](https://dweb.mypinata.cloud/ipfs/bafkreicjxhuj6p3kiyg7u6nhoy4z3lvttwka2hxrl5vmrh5ennil6es57q)
+
+### Save and Deploy
+
+Once you have those settings entered you can just click the "Save and Deploy" button in the bottom right, and you're done! Anytime you push a new commit it will deploy a new version of the site, including previews for branches.
+
+::::tip
+[Check out the Cloudflare Docs for more info and tips](https://developers.cloudflare.com/pages/get-started/git-integration/)
+::::
+
+
+## Direct Upload
+
+::::steps
+
+### Login to Cloudlfare
+
+Using the `wrangler` CLI login to your Cloudflare account to authorize it
+
+```bash [!terminal]
+bunx wrangler login
+```
+
+### Setup Project
+
+First make sure you have built the client
+
+```bash [!terminal]
+bun run build
+```
+
+Then use the `wrangler` CLI to create a new empty project in Cloudflare
+
+```bash [!terminal]
+bunx wrangler pages project create
+```
+
+### Deploy
+
+Lastly run the following command to directly upload the `dist` build folder of your `client`
+
+```bash [!terminal]
+bunx wrangler pages deploy client/dist
+```
+
+You can automate this into a script by adding it to your root `package.json`
+
+```json
+{
+  "scripts": {
+   // Other scripts
+   "deploy:client": "bun run build:client && bunx wrangler deploy client/dist"
+  }
+}
+```
+
+::::tip
+[Check out the Cloudflare Docs for more info and tips](https://developers.cloudflare.com/pages/get-started/direct-upload/)
+::::

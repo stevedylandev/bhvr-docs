@@ -1,3 +1,120 @@
 # Cloudflare Workers
 
-Coming soon
+One of the simplest ways to deploy your `server` is through Cloudflare Workers, which are lightweight, fast, and very inexpensive.
+
+## Deployment
+
+::::steps
+
+### Login to Cloudlfare
+
+Using the `wrangler` CLI login to your Cloudflare account to authorize it
+
+```bash [!terminal]
+bunx wrangler login
+```
+
+### Add `wrangler.jsonc` File
+
+Create a new file called `wrangler.jsonc` in the root of your `server` package and paste in the following template.
+
+```jsonc
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "server",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-05-25"
+  // "compatibility_flags": [
+  //   "nodejs_compat"
+  // ],
+  // "vars": {
+  //   "MY_VAR": "my-variable"
+  // },
+  // "kv_namespaces": [
+  //   {
+  //     "binding": "MY_KV_NAMESPACE",
+  //     "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  //   }
+  // ],
+  // "r2_buckets": [
+  //   {
+  //     "binding": "MY_BUCKET",
+  //     "bucket_name": "my-bucket"
+  //   }
+  // ],
+  // "d1_databases": [
+  //   {
+  //     "binding": "MY_DB",
+  //     "database_name": "my-database",
+  //     "database_id": ""
+  //   }
+  // ],
+  // "ai": {
+  //   "binding": "AI"
+  // },
+  // "observability": {
+  //   "enabled": true,
+  //   "head_sampling_rate": 1
+  // }
+}
+```
+
+### Update `package.json` Files
+
+Add the following items to your `server/package.json` file
+
+```json
+{
+  "name": "server",
+  "version": "0.0.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "bun run --hot src/index.ts", // [!code --]
+    "dev": "wrangler dev", // [!code ++]
+    "deploy": "wrangler deploy --minify", // [!code ++]
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings" // [!code ++]
+  },
+  "dependencies": {
+    "hono": "^4.7.7",
+    "shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "wrangler": "^4.4.0" // [!code ++]
+  }
+}
+```
+
+Then update `scripts` section of the root `package.json` for your bhvr project
+
+```json
+"scripts": {
+  "dev:client": "cd client && bun run dev",
+  "dev:server": "cd server && bun run dev",
+  "dev:shared": "cd shared && bun run dev",
+  "dev": "concurrently \"bun run dev:shared\" \"bun run dev:server\" \"bun run dev:client\"",
+  "build:client": "cd client && bun run build",
+  "build:shared": "cd shared && bun run build",
+  "build:server": "cd server && bun run build",
+  "build": "bun run build:shared && bun run build:server && bun run build:client",
+  "deploy:server": "cd server && bun run deploy",
+  "postinstall": "bun run build:shared && bun run build:server"
+},
+```
+
+### Deploy
+
+Install dependencies for your updated `server/package.json` then run the deploy command
+
+```bash [!terminal]
+bun install
+bun run deploy:server
+```
+
+::::
+
+::::tip
+[Check out the Cloudflare Docs for more info and tips](https://developers.cloudflare.com/workers/)
+::::
