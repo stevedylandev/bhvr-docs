@@ -1,0 +1,85 @@
+# Netlify
+
+One of the classic static site providers still gives developers a great experience for deploying sites, including your bhvr client! There are multiple ways you can deploy your client package to Netlify:
+- Netlify CLI
+- Git Provider
+
+## CLI Method
+
+The Netlify CLI will help setup a new project on Netlify and create Git webhooks so with every push it will deploy a new version automatically. To enable this for your bhvr project follow these steps.
+
+::::steps
+
+### Install `netlify-cli`
+
+Install the `netlify-cli` globally so you can use it with your projects
+
+```bash [terminal]
+bun add -g netlify-cli
+```
+
+### Run Initialization
+
+Move into the `client` package and run the initialization commmand to setup a new project
+
+```bash [terminal]
+cd client
+ntl init
+```
+
+Make sure when setting up the project that the `Directory to Deploy` is `dist`
+
+```bash [terminal]
+? Base directory `(blank for current dir): client
+? Your build command (hugo build/yarn run build/etc): bun run build
+? Directory to deploy (blank for current dir): dist
+```
+
+### Deploy
+
+If you setup the Git provider connection offered through the CLI you can just push commits and it will deploy instances. You can also do it through the CLI through the following command in the `client` package:
+
+```bash [terminal]
+ntl deploy
+```
+
+If you want to deploy to production use the `--prod` flag
+
+```bash [terminal]
+ntl deploy --prod
+```
+
+::::
+
+## Git Provider
+
+If you prefer a flow similar to something like Vercel where you get deployments on commits you can use the Git provider flow
+
+::::steps
+
+### Start Project
+
+From the Projects dashboard click on the `Add new project` button in the top right and select the `Import an existing project` option.
+
+![dashboard](https://cdn.bhvr.dev/netlify-new-project.png)
+
+Connect with your Git provider and locate your bhvr project
+
+### Confirm Build Settings
+
+After selecting your project make sure the build settings are correct. Generally these are ready out of the box as Netlify will detect what you need.
+
+![build settings](https://cdn.bhvr.dev/netlify-build-settings.png)
+
+
+### Deploy
+
+After confirming the settings Netlify should deploy a new instance with a URL you can visit!
+
+![project overview](https://cdn.bhvr.dev/netlify-project-overview.png)
+
+::::
+
+::::tip
+[Check out the Vite Docs for more info and tips](https://vite.dev/guide/static-deploy#github-pages)
+::::
