@@ -119,6 +119,10 @@ export default defineConfig({
 							text: "Cloudflare Workers",
 							link: "/deployment/server/cloudflare-workers",
 						},
+						{
+							text: "Railway",
+							link: "/deployment/server/railway",
+						},
 					],
 				},
 				{

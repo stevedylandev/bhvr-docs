@@ -1,0 +1,76 @@
+# Railway
+
+For a simple Bun server deployment you can use Railway by changing just a few lines of code.
+
+::::steps
+
+### Update `app` export
+
+Update the code inside `server/src/index.ts` and use the export below which gives Railway access to the host and port.
+
+```typescript [srver/src/index.ts]
+import { Hono } from 'hono'
+import { cors } from 'hono/cors'
+import type { ApiResponse } from 'shared/dist'
+
+const app = new Hono()
+
+app.use(cors())
+
+app.get('/', (c) => {
+  return c.text('Hello Hono!')
+})
+
+app.get('/hello', async (c) => {
+
+  const data: ApiResponse = {
+    message: "Hello BHVR!",
+    success: true
+  }
+
+  return c.json(data, { status: 200 })
+})
+
+export default app; // [!code --]
+export default { // [!code ++]
+  port: Number(process.env.PORT) || 3000, // [!code ++]
+  hostname: '0.0.0.0', // [!code ++]
+  fetch: app.fetch, // [!code ++]
+}; // [!code ++]
+```
+
+### Add start command
+
+Inside the root `package.json` add a new `start` command that will be used by Railway for deployment
+
+```json [package.json]
+// Rest of package.json
+  "scripts": {
+    "dev:client": "cd client && bun run dev",
+    "dev:server": "cd server && bun run dev",
+    "dev:shared": "cd shared && bun run dev",
+    "dev": "concurrently \"bun run dev:shared\" \"bun run dev:server\" \"bun run dev:client\"",
+    "build:client": "cd client && bun run build",
+    "build:shared": "cd shared && bun run build",
+    "build:server": "cd server && bun run build",
+    "build": "bun run build:shared && bun run build:server && bun run build:client",
+    "postinstall": "bun run build:shared && bun run build:server",
+    "start": "bun run server/dist/index.js" // [!code focus]
+  },
+```
+
+### Deploy on Railway
+
+Login to your Railway account and create new project from your Git source
+
+![new project](https://cdn.bhvr.dev/railway-new-project.png)
+
+After selecting the repo with your changes from the previous steps it should automatically deploy your instance! To access it from a public URL go to the instance settings, and under `Networking` click `Generate Domain`
+
+![generate domain](https://cdn.bhvr.dev/railway-new-domain.png)
+
+::::
+
+::::tip
+With some tweaking you could use this same approach to deploy your entire app with the [single origin deployment guide](/deployment/single-origin)
+::::
