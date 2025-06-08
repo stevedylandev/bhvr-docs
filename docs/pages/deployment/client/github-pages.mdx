@@ -1,3 +1,118 @@
 # GitHub Pages
 
-Coming soon
+Since the bhvr client is a simple static site you can deploy it just about anywhere, including GitHub Pages. Just follow these steps:
+
+::::steps
+
+### Enable GitHub Pages action
+
+Go to your repo settings and click on the `Pages` tab on the left side, then select `GitHub Actions` as the `Source`
+
+![gh dash](https://cdn.bhvr.dev/CleanShot%202025-06-07%20at%2021.06.59%402x.png)
+
+### Add the GitHub Action File
+
+Create a new directory in the root of your project called `.github` and put another folder inside of it called `workflows`. Finally create a file inside of that folder called `deploy-pages.yaml` with the following contents. Pay special attention to the `Build Client` step as that is where you need to replace `your-repo-name` with the actual name of your repo, as well as any environment variables you want included in the build.
+
+```yaml [.github/workflows/deploy-pages.yaml]
+name: Deploy to GitHub Pages
+
+on:
+  # Trigger on pushes to main branch
+  push:
+    branches: [ main ]
+
+  # Allow manual triggering from Actions tab
+  workflow_dispatch:
+
+# Set permissions for GitHub Pages deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build shared package
+        run: bun run build:shared
+
+      - name: Build client
+        run: bun run build:client
+        env:
+          # Set the base URL for GitHub Pages # [!code hl]
+          # Replace 'your-repo-name' with actual values # [!code hl]
+          VITE_BASE_URL: /your-repo-name/  # [!code hl]
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './client/dist'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+### Update the `vite.config.ts` in the `client` package
+
+Update the `vite.config.ts` file located in the `client/src` directory to include the `base` property
+
+```typescript [vite.config.ts]
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+import path from "path";
+
+export default defineConfig({
+	plugins: [react(), tailwindcss()],
+	base: process.env.VITE_BASE_URL || "/", // [!code hl]
+	resolve: {
+		alias: {
+			"@client": path.resolve(__dirname, "./src"),
+			"@server": path.resolve(__dirname, "../server/src"),
+			"@shared": path.resolve(__dirname, "../shared/src"),
+			"@": path.resolve(__dirname, "./src"),
+		},
+	},
+});
+```
+
+### Push to Deploy!
+
+After setting these up you have deployments anytime you push to your main branch!
+
+::::
+
+::::tip
+[Check out the Vite Docs for more info and tips](https://vite.dev/guide/static-deploy#github-pages)
+::::
