@@ -21,13 +21,17 @@ In this guide we'll show you how to deploy your [`server`](/packages/server) to 
 Orbiter Functions are only available on paid plans. [Upgrade today!](https://app.orbiter.host/billing)
 ::::
 
+### Quickstart
+
+If you haven't already created your bhvr app you can quickly create one using the Orbiter CLI
+
 ::::steps
 
-### Setup Orbiter Account
+#### Setup Orbiter Account
 
 Visit [app.orbiter.host](https://app.orbiter.host) to create an account and make an API key on the [App Dashboard](https://app.orbiter.host) or on the [Keys Page](https://app.orbiter.host/api-keys).
 
-### Install the Orbiter CLI and Authorize
+#### Install the Orbiter CLI and Authorize
 
 ```bash [terminal]
 bun add -g orbiter-cli@latest
@@ -37,7 +41,49 @@ bun add -g orbiter-cli@latest
 orbiter auth
 ```
 
-### Update Export Format
+#### Create a New bhvr Project
+
+Orbiter includes a special version of bhvr that has everything you need to have a fullstack app
+
+```bash [terminal]
+orbiter new --template bhvr
+```
+
+This will automatically install, build, and deploy the client and server packages of your bhvr project!
+
+#### Deploy
+
+Whenever you need to upload, simply run any of the `deploy` commands
+
+```bash [terminal]
+bun run deploy:client
+bun run deploy:server
+bun run deploy # Deploys both client and server
+```
+
+::::
+
+### Manual Setup
+
+Follow this guide if you already have an existing bhvr project you want to deploy to Orbiter
+
+::::steps
+
+#### Setup Orbiter Account
+
+Visit [app.orbiter.host](https://app.orbiter.host) to create an account and make an API key on the [App Dashboard](https://app.orbiter.host) or on the [Keys Page](https://app.orbiter.host/api-keys).
+
+#### Install the Orbiter CLI and Authorize
+
+```bash [terminal]
+bun add -g orbiter-cli@latest
+```
+
+```bash [terminal]
+orbiter auth
+```
+
+#### Update Export Format
 
 Update the code inside `server/src/index.ts` to use the export format required by Orbiter Functions:
 
@@ -72,7 +118,7 @@ export default { // [!code ++]
 }; // [!code ++]
 ```
 
-### Deploy Server
+#### Deploy Server
 
 Move into the `server` package and run the deploy command with the server flag:
 
@@ -133,15 +179,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v1
         with:
           bun-version: latest
-        
+
       - name: Install dependencies
         run: bun install
-        
+
       - name: Deploy to Orbiter
         env:
           ORBITER_API_KEY: ${{ secrets.ORBITER_API_KEY }}

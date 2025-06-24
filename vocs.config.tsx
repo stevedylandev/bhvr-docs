@@ -116,6 +116,10 @@ export default defineConfig({
 					collapsed: true,
 					items: [
 						{
+							text: "Orbiter",
+							link: "/deployment/server/orbiter",
+						},
+						{
 							text: "Cloudflare Workers",
 							link: "/deployment/server/cloudflare-workers",
 						},
