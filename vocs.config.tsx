@@ -58,6 +58,21 @@ export default defineConfig({
 			],
 		},
 	],
+	sponsors: [
+		{
+			name: "Partners",
+			height: 80,
+			items: [
+				[
+					{
+						name: "Orbiter",
+						link: "https://orbiter.host",
+						image: "https://cdn.bhvr.dev/orbiter-logo-3.png",
+					},
+				],
+			],
+		},
+	],
 	sidebar: [
 		{
 			text: "Getting Started",

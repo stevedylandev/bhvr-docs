@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
 .vocs_HomePage_logo {
-  height: 150px !important;
+	height: 150px !important;
+}
+
+.vocs_Sponsors {
+	max-width: 400px !important;
+	margin: 4rem auto !important;
+	height: auto !important;
 }
