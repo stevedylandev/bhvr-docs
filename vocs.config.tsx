@@ -52,7 +52,7 @@ export default defineConfig({
 	},
 	topNav: [
 		{
-			text: "0.3.0",
+			text: "0.4.0",
 			items: [
 				{ text: "Contribute", link: "https://github.com/stevedylandev/bhvr" },
 			],
