@@ -146,7 +146,17 @@ export default defineConfig({
 				},
 				{
 					text: "Single Origin",
-					link: "/deployment/single-origin",
+					collapsed: true,
+					items: [
+						{
+							text: "Cloudflare",
+							link: "/deployment/single-origin/cloudflare",
+						},
+						{
+							text: "VPS / Docker",
+							link: "/deployment/single-origin/vps-docker",
+						},
+					],
 				},
 			],
 		},

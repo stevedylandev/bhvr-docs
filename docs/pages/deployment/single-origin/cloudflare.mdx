@@ -1,0 +1,229 @@
+# Cloudflare
+
+import { Button } from "vocs/components";
+
+By using Cloudflare Workers you can host the `server` and the `client` in one deployment thanks to the built in [Static Assets Feature](https://hono.dev/docs/getting-started/cloudflare-workers#serve-static-files). With this approach everything will come through a single origin where any routes not covered by Hono will fallback to resolving via the static assets folder, which in our case is our React app.
+
+## Prerequisites
+
+This guide assumes you have a bhvr project set up. If not, start here:
+
+```bash
+bun create bhvr@latest my-app
+cd my-app
+```
+
+<Button href='/getting-started'>Getting Started with bhvr</Button>
+
+## Configuration
+
+::::steps
+
+### 1. Update Your Hono Server
+
+Modify `server/src/index.ts` to have a new basepath of `/api`
+
+```typescript
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import type { ApiResponse } from "shared/dist";
+
+const app = new Hono() // [!code --]
+const app = new Hono().basePath("/api"); // [!code ++]
+
+app.use(cors());
+
+app.get("/", (c) => {
+	return c.text("Hello Hono!");
+});
+
+app.get("/hello", async (c) => {
+	const data: ApiResponse = {
+		message: "Hello BHVR!",
+		success: true,
+	};
+
+	return c.json(data, { status: 200 });
+});
+
+export default app;
+```
+
+### 2. Update Your React Client
+
+Modify `client/src/App.tsx` to use a dynamic `SERVER_URL` based on dev / prod environment
+
+```typescript
+import { useState } from "react";
+import beaver from "./assets/beaver.svg";
+import { ApiResponse } from "shared";
+import "./App.css";
+
+const SERVER_URL = import.meta.env.VITE_SERVER_URL || "http://localhost:3000" // [!code --]
+const SERVER_URL = import.meta.env.DEV ? "http://localhost:3000/api" : "/api";  // [!code ++]
+
+function App() {
+  const [data, setData] = useState<ApiResponse | undefined>();
+
+  async function sendRequest() {
+    try {
+      const req = await fetch(`${SERVER_URL}/hello`);
+      const res: ApiResponse = await req.json();
+      setData(res);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  return (
+    <>
+      <div>
+        <a href='https://github.com/stevedylandev/bhvr' target='_blank'>
+          <img src={beaver} className='logo' alt='beaver logo' />
+        </a>
+      </div>
+      <h1>bhvr</h1>
+      <h2>Bun + Hono + Vite + React</h2>
+      <p>A typesafe fullstack monorepo</p>
+      <div className='card'>
+        <button onClick={sendRequest}>Call API</button>
+        {data && (
+          <pre className='response'>
+            <code>
+              Message: {data.message} <br />
+              Success: {data.success.toString()}
+            </code>
+          </pre>
+        )}
+      </div>
+      <p className='read-the-docs'>Click the beaver to learn more</p>
+    </>
+  );
+}
+
+export default App;
+```
+
+### 3. Setup Wrangler
+
+Install `wrangler` and it's types at the root of your bhvr project
+
+```bash [terminal]
+bun add --dev wrangler @cloudflare/workers-types
+```
+
+Then create another file at the root of the project called `wrangler.jsonc` with the following content:
+
+```jsonc
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "bhvr-project", // Name of your project
+	"main": "./server/dist/index.js", // Path to worker
+	"compatibility_date": "2025-05-25",
+	"assets": {
+		"directory": "./client/dist", // Path to client build folder
+		"not_found_handling": "single-page-application" // Handle SPA routing
+	},
+	"compatibility_flags": ["nodejs_compat"] // Enable node for Vite path features
+}
+```
+
+### 4. Add Deploy Script
+
+Append a deploy script to your root `package.json` (alongside the existing bhvr scripts):
+
+```json
+{
+  "scripts": {
+		"dev": "turbo dev",
+		"dev:client": "turbo dev --filter=client",
+		"dev:server": "turbo dev --filter=server",
+		"build": "turbo build",
+		"build:client": "turbo build --filter=client",
+		"build:server": "turbo build --filter=server",
+		"lint": "turbo lint",
+		"type-check": "turbo type-check",
+		"test": "turbo test",
+		"postinstall": "turbo build --filter=shared --filter=server",
+		"deploy": "turbo build && wrangler deploy --minify" // [!code ++]
+	},
+}
+```
+
+### 5. Deploy
+
+Make sure you have logged into Cloudflare using Wrangler first
+
+```bash [terminal]
+bunx wrangler login
+```
+
+Then run the deployment script
+
+```bash [terminal]
+bun run deploy
+```
+
+::::
+
+## Environment Variables
+
+You can use environment variables just like you would with Hono + Cloudflare workers as described in the [Hono Docs](https://hono.dev/docs/getting-started/cloudflare-workers#bindings) for Bindings. Here is an example of what you might have in `server/src/index.ts`:
+
+```typescript
+import { Hono } from "hono";
+import { cors } from "hono/cors";
+import type { ApiResponse } from "shared/dist";
+
+type Bindings = {
+	SECRET: string;
+};
+
+const app = new Hono<{ Bindings: Bindings }>().basePath("/api");
+
+app.use(cors());
+
+app.get("/", (c) => {
+	return c.text("Hello Hono!");
+});
+
+app.get("/hello", async (c) => {
+	const data: ApiResponse = {
+		message: `Hello BHVR! (this is the secret: ${c.env.SECRET}`,
+		success: true,
+	};
+
+	return c.json(data, { status: 200 });
+});
+
+export default app;
+```
+
+To add the secret in dev you would create a `.dev.vars` file in `server` with the variable
+
+```
+SECRET=hotdog
+```
+
+:::warning
+Make sure to add .dev.vars to your `.gitignore`!
+:::
+
+To add it in production, you can either add it through the Cloudflare dashboard or through Wrangler:
+
+```bash [terminal]
+bunx wrangler secret put SECRET
+# Will prompt you to enter the secret
+```
+
+For client side variables you can simply include them in a local `.env.local` file in the root of the `client` package, and make sure to use the `VITE_` prefix for them. When you build they will automatically be included in the `dist` bundle.
+
+:::warning
+Make sure only public variables are in the client!
+:::
+
+
+## More Resources
+
+<Button href='/getting-started'>Getting Started with bhvr</Button>
+<Button href='https://hono.dev'>Hono Docs</Button>
