@@ -135,17 +135,17 @@ Append a deploy script to your root `package.json` (alongside the existing bhvr 
 ```json
 {
   "scripts": {
-		"dev": "turbo dev",
-		"dev:client": "turbo dev --filter=client",
-		"dev:server": "turbo dev --filter=server",
-		"build": "turbo build",
-		"build:client": "turbo build --filter=client",
-		"build:server": "turbo build --filter=server",
-		"lint": "turbo lint",
-		"type-check": "turbo type-check",
-		"test": "turbo test",
-		"postinstall": "turbo build --filter=shared --filter=server",
-		"deploy": "turbo build && wrangler deploy --minify" // [!code ++]
+  	"dev": "turbo dev",
+  	"dev:client": "turbo dev --filter=client",
+  	"dev:server": "turbo dev --filter=server",
+  	"build": "turbo build",
+  	"build:client": "turbo build --filter=client",
+  	"build:server": "turbo build --filter=server",
+  	"lint": "turbo lint",
+  	"type-check": "turbo type-check",
+  	"test": "turbo test",
+  	"postinstall": "turbo build --filter=shared --filter=server",
+  	"deploy": "turbo build && wrangler deploy --minify" // [!code ++]
 	},
 }
 ```
