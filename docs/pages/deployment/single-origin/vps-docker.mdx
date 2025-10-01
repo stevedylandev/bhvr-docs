@@ -182,18 +182,19 @@ Add these scripts to your root `package.json` (alongside the existing bhvr scrip
 ```json
 {
   "scripts": {
-    "dev:client": "cd client && bun run dev",
-    "dev:server": "cd server && bun run dev",
-    "dev:shared": "cd shared && bun run dev",
-    "dev": "concurrently \"bun run dev:shared\" \"bun run dev:server\" \"bun run dev:client\"",
-    "build:client": "cd client && bun run build",
-    "build:shared": "cd shared && bun run build",
-    "build:server": "cd server && bun run build",
-    "build": "bun run build:shared && bun run build:client",
+    "dev": "turbo dev",
+    "dev:client": "turbo dev --filter=client",
+    "dev:server": "turbo dev --filter=server",
+    "build": "turbo build",
+    "build:client": "turbo build --filter=client",
+    "build:server": "turbo build --filter=server",
     "build:single": "bun run build && bun run copy:static && bun run build:server", // [!code ++]
     "copy:static": "rm -rf server/static && cp -r client/dist server/static", // [!code ++]
     "start:single": "cd server && bun run dist/index.js", // [!code ++]
-    "postinstall": "bun run build:shared && bun run build:server"
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "postinstall": "turbo build --filter=shared --filter=server"
   }
 }
 ```
