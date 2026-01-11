@@ -122,7 +122,9 @@ Then create another file at the root of the project called `wrangler.jsonc` with
 	"compatibility_date": "2025-05-25",
 	"assets": {
 		"directory": "./client/dist", // Path to client build folder
-		"not_found_handling": "single-page-application" // Handle SPA routing
+		"not_found_handling": "single-page-application", // Handle SPA routing		
+		"run_worker_first": ["/api/*"]
+
 	},
 	"compatibility_flags": ["nodejs_compat"] // Enable node for Vite path features
 }
