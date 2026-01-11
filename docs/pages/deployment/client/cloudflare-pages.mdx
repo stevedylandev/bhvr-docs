@@ -77,7 +77,7 @@ You can automate this into a script by adding it to your root `package.json`
 {
   "scripts": {
    // Other scripts
-   "deploy:client": "bun run build:client && bunx wrangler deploy client/dist"
+   "deploy:client": "bun run build:client && bunx wrangler pages deploy client/dist"
   }
 }
 ```
