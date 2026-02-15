@@ -26,7 +26,7 @@ Modify `server/src/index.ts` to have a new basepath of `/api`
 ```typescript
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import type { ApiResponse } from "shared/dist";
+import type { ApiResponse } from "shared";
 
 const app = new Hono() // [!code --]
 const app = new Hono().basePath("/api"); // [!code ++]
@@ -175,7 +175,7 @@ You can use environment variables just like you would with Hono + Cloudflare wor
 ```typescript
 import { Hono } from "hono";
 import { cors } from "hono/cors";
-import type { ApiResponse } from "shared/dist";
+import type { ApiResponse } from "shared";
 
 type Bindings = {
 	SECRET: string;

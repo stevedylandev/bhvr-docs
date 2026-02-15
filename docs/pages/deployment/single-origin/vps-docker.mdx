@@ -51,7 +51,7 @@ Modify `server/src/index.ts` to serve static files alongside your API:
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { serveStatic } from "hono/bun"; // [!code ++]
-import type { ApiResponse } from "shared/dist";
+import type { ApiResponse } from "shared";
 
 const app = new Hono();
 
