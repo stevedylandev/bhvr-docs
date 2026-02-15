@@ -1,0 +1,154 @@
+# No-Build Docker
+
+Deploy your bhvr server with Docker using Bun's native TypeScript execution—no build step required.
+
+This approach leverages the `--no-build` scaffolding option where Bun runs TypeScript files directly, resulting in simpler Dockerfiles and faster container builds.
+
+:::note
+Standard bhvr projects (with build step) can also be deployed via Docker, but require additional Dockerfile complexity to handle TypeScript compilation and workspace dependencies. The `--no-build` option significantly simplifies containerization.
+:::
+
+## Prerequisites
+
+Your bhvr project must be scaffolded with the `--no-build` option:
+
+```bash
+bun create bhvr@latest my-app --no-build
+```
+
+Or select "No build step" when prompted during interactive setup.
+
+## Dockerfile
+
+Create a `Dockerfile` in your project root:
+
+```dockerfile
+FROM oven/bun:1-alpine
+WORKDIR /app
+
+# Copy everything (client excluded via .dockerignore)
+COPY . .
+
+# Install dependencies
+RUN bun install --frozen-lockfile --production
+
+# Create data directory with proper permissions
+RUN mkdir -p /app/data && chown bun:bun /app/data
+
+USER bun
+ENV NODE_ENV=production
+EXPOSE 3000
+
+CMD ["bun", "run", "server/src/index.ts"]
+```
+
+## .dockerignore
+
+Create a `.dockerignore` to keep images lean:
+
+```dockerignore
+# Dependencies (installed fresh in container)
+node_modules
+*/node_modules
+
+# Client: exclude all except package.json for workspace resolution
+client/*
+!client/package.json
+
+# Git
+.git
+.gitignore
+
+# IDE/Editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# Build artifacts
+dist
+*.tsbuildinfo
+
+# Environment files (use docker env vars or secrets)
+.env
+.env.*
+!.env.example
+
+# Documentation
+*.md
+!README.md
+
+# Docker files (avoid recursive copy)
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+__tests__
+coverage
+
+# Turbo cache
+.turbo
+```
+
+## Build and Run
+
+```bash
+# Build the image
+docker build -t my-bhvr-server .
+
+# Run the container
+docker run -p 3000:3000 my-bhvr-server
+```
+
+With environment variables:
+
+```bash
+docker run -p 3000:3000 \
+  -e DATABASE_URL="your-db-url" \
+  -e SECRET_KEY="your-secret" \
+  my-bhvr-server
+```
+
+## Docker Compose
+
+For more complex setups, use `docker-compose.yml`:
+
+```yaml
+version: "3.8"
+
+services:
+  server:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - app-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  app-data:
+```
+
+Run with:
+
+```bash
+docker compose up -d
+```
+
+## Hosting
+
+Once you have a working Dockerfile, deployment to self-hosted platforms is straightforward:
+
+- [Coolify](https://coolify.io/docs/applications/build-packs/dockerfile) - Select "Dockerfile" as build pack
+- [Dokploy](https://docs.dokploy.com/docs/core/applications/build-type#dockerfile) - Choose "Dockerfile" build type
+
+Both platforms auto-detect your Dockerfile and handle the rest.
+
+:::tip
+Coolify and Dokploy can be installed on any VPS. Popular providers include [Hetzner](https://www.hetzner.com/cloud/) (best price-performance), [DigitalOcean](https://www.digitalocean.com/), [Vultr](https://www.vultr.com/), and [Linode](https://www.linode.com/).
+:::

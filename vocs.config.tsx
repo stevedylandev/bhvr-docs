@@ -142,6 +142,10 @@ export default defineConfig({
 							text: "Railway",
 							link: "/deployment/server/railway",
 						},
+						{
+							text: "No-Build Docker",
+							link: "/deployment/server/no-build-docker",
+						},
 					],
 				},
 				{
