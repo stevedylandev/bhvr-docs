@@ -58,21 +58,6 @@ export default defineConfig({
 			],
 		},
 	],
-	sponsors: [
-		{
-			name: "Partners",
-			height: 80,
-			items: [
-				[
-					{
-						name: "Orbiter",
-						link: "https://orbiter.host",
-						image: "https://cdn.bhvr.dev/orbiter-logo-3.png",
-					},
-				],
-			],
-		},
-	],
 	sidebar: [
 		{
 			text: "Getting Started",
@@ -109,10 +94,6 @@ export default defineConfig({
 					collapsed: true,
 					items: [
 						{
-							text: "Orbiter",
-							link: "/deployment/client/orbiter",
-						},
-						{
 							text: "Cloudflare Pages",
 							link: "/deployment/client/cloudflare-pages",
 						},
@@ -130,10 +111,6 @@ export default defineConfig({
 					text: "Server",
 					collapsed: true,
 					items: [
-						{
-							text: "Orbiter",
-							link: "/deployment/server/orbiter",
-						},
 						{
 							text: "Cloudflare Workers",
 							link: "/deployment/server/cloudflare-workers",
